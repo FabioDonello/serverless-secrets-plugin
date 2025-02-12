@@ -7,9 +7,10 @@ const BbPromise = require('bluebird');
 
 const algorithm = 'aes-256-cbc';
 
-function secretsFileName() {
-  const isMilestoneStage = new RegExp('^milestone_\\d+$').test(this.options.stage);
-  return isMilestoneStage ? `secrets.default.yml` : `secrets.${this.options.stage}.yml`;
+function secretsFileName(stage) {
+  const isMilestoneStage = new RegExp('^milestone\\d+$').test(stage);
+  console.log('Is a milestone stage: ', isMilestoneStage);
+  return isMilestoneStage ? 'secrets.default.yml' : `secrets.${stage}.yml`;
 }
 
 class ServerlessSecretsPlugin {
@@ -63,7 +64,7 @@ class ServerlessSecretsPlugin {
     return new BbPromise((resolve, reject) => {
       const servicePath = this.serverless.config.servicePath;
       const customPath = this.customPath;
-      const credentialFileName = secretsFileName();
+      const credentialFileName = secretsFileName(this.options.stage);
       const encryptedCredentialFileName = `${credentialFileName}.encrypted`;
       const secretsPath = path.join(servicePath, customPath, credentialFileName);
       const encryptedCredentialsPath = path.join(servicePath, customPath, encryptedCredentialFileName);
@@ -85,7 +86,7 @@ class ServerlessSecretsPlugin {
     return new BbPromise((resolve, reject) => {
       const servicePath = this.serverless.config.servicePath;
       const customPath = this.customPath;
-      const credentialFileName = secretsFileName()
+      const credentialFileName = secretsFileName(this.options.stage);
       const encryptedCredentialFileName = `${credentialFileName}.encrypted`;
       const secretsPath = path.join(servicePath, customPath, credentialFileName);
       const encryptedCredentialsPath = path.join(servicePath, customPath, encryptedCredentialFileName);
@@ -107,7 +108,7 @@ class ServerlessSecretsPlugin {
     return new BbPromise((resolve, reject) => {
       const servicePath = this.serverless.config.servicePath;
       const customPath = this.customPath;
-      const credentialFileName = secretsFileName();
+      const credentialFileName = secretsFileName(this.options.stage);
       const secretsPath = path.join(servicePath, customPath, credentialFileName);
       fs.access(secretsPath, fs.F_OK, (err) => {
         if (err) {
