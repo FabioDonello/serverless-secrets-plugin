@@ -7,6 +7,11 @@ const BbPromise = require('bluebird');
 
 const algorithm = 'aes-256-cbc';
 
+function secretsFileName() {
+  const isMilestoneStage = new RegExp('^milestone_\\d+$').test(this.options.stage);
+  return isMilestoneStage ? `secrets.default.yml` : `secrets.${this.options.stage}.yml`;
+}
+
 class ServerlessSecretsPlugin {
   constructor(serverless, options) {
     this.serverless = serverless;
@@ -58,7 +63,7 @@ class ServerlessSecretsPlugin {
     return new BbPromise((resolve, reject) => {
       const servicePath = this.serverless.config.servicePath;
       const customPath = this.customPath;
-      const credentialFileName = `secrets.${this.options.stage}.yml`;
+      const credentialFileName = secretsFileName();
       const encryptedCredentialFileName = `${credentialFileName}.encrypted`;
       const secretsPath = path.join(servicePath, customPath, credentialFileName);
       const encryptedCredentialsPath = path.join(servicePath, customPath, encryptedCredentialFileName);
@@ -80,7 +85,7 @@ class ServerlessSecretsPlugin {
     return new BbPromise((resolve, reject) => {
       const servicePath = this.serverless.config.servicePath;
       const customPath = this.customPath;
-      const credentialFileName = `secrets.${this.options.stage}.yml`;
+      const credentialFileName = secretsFileName()
       const encryptedCredentialFileName = `${credentialFileName}.encrypted`;
       const secretsPath = path.join(servicePath, customPath, credentialFileName);
       const encryptedCredentialsPath = path.join(servicePath, customPath, encryptedCredentialFileName);
@@ -102,7 +107,7 @@ class ServerlessSecretsPlugin {
     return new BbPromise((resolve, reject) => {
       const servicePath = this.serverless.config.servicePath;
       const customPath = this.customPath;
-      const credentialFileName = `secrets.${this.options.stage}.yml`;
+      const credentialFileName = secretsFileName();
       const secretsPath = path.join(servicePath, customPath, credentialFileName);
       fs.access(secretsPath, fs.F_OK, (err) => {
         if (err) {
